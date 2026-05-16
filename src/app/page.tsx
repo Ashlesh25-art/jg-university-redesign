@@ -10,7 +10,7 @@ import Testimonials from "@/src/components/Testimonials";
 
 export default function Home() {
   return (
-    <div className="bg-white text-slate-900">
+    <div className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <Navbar />
       <main className="flex flex-col">
         <Hero />

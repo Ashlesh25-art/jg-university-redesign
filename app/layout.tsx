@@ -13,8 +13,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full bg-white text-slate-900 font-sans">
+    // suppressHydrationWarning prevents React from complaining when the
+    // inline script below mutates className/style before hydration.
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        {/* Blocking script: runs before first paint so there is zero flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+  try{
+    var theme = localStorage.getItem('theme');
+    if(theme === 'dark'){
+      document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
+    }
+  }catch(e){}
+})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-full bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
         {children}
       </body>
     </html>

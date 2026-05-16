@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* ─── Tailwind v4: class-based dark mode ───────────────────────────────────
+   The @custom-variant below makes every `dark:` utility require a .dark
+   ancestor on <html> instead of the OS media query.
+   This is the ONLY thing needed in v4 — tailwind.config darkMode is ignored.
+   ─────────────────────────────────────────────────────────────────────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Design tokens ─────────────────────────────────────────────────────── */
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
@@ -7,23 +15,26 @@
   --brand-blue-dark: #1d4ed8;
   --brand-amber: #f59e0b;
   --brand-purple: #7c3aed;
+  /* Tells the browser (scrollbars, form controls, etc.) this is light mode */
+  color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark mode: only activates when .dark is on <html> — never from OS */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
+/* ─── Base ──────────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
 }
@@ -32,8 +43,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Gradient helpers ──────────────────────────────────────────────────── */
 .animated-gradient {
   background-size: 200% 200%;
   animation: gradientShift 16s ease infinite;
@@ -47,12 +61,24 @@ body {
   background-image: linear-gradient(120deg, #2563eb, #7c3aed, #1d4ed8);
 }
 
+/* ─── Glass card ────────────────────────────────────────────────────────── */
+/* Light mode: clearly white/frosted — readable against coloured backgrounds */
 .glass-card {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #0f172a;
 }
 
+/* Dark mode override — class-based, NEVER from @media prefers-color-scheme */
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  color: #ededed;
+}
+
+/* ─── Patterns ──────────────────────────────────────────────────────────── */
 .pattern-grid {
   background-image: linear-gradient(
       to right,
@@ -75,6 +101,27 @@ body {
   background-size: 22px 22px;
 }
 
+.dark .pattern-grid {
+  background-image: linear-gradient(
+      to right,
+      rgba(148, 163, 184, 0.07) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(148, 163, 184, 0.07) 1px,
+      transparent 1px
+    );
+}
+
+.dark .pattern-dots {
+  background-image: radial-gradient(
+    rgba(148, 163, 184, 0.10) 1px,
+    transparent 1px
+  );
+}
+
+/* ─── Text gradient (hero headline accent) ──────────────────────────────── */
 .text-gradient {
   background-image: linear-gradient(120deg, #f59e0b, #f8fafc, #93c5fd);
   background-clip: text;
@@ -82,27 +129,21 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+/* ─── Utility glass (dark-always panels) ───────────────────────────────── */
 .dark-glass {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.2);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.float-slow {
-  animation: floatSlow 10s ease-in-out infinite;
-}
+/* ─── Float animations ──────────────────────────────────────────────────── */
+.float-slow   { animation: floatSlow 10s ease-in-out infinite; }
+.float-slower { animation: floatSlow 14s ease-in-out infinite; }
+.float-fast   { animation: floatFast 7s  ease-in-out infinite; }
 
-.float-slower {
-  animation: floatSlow 14s ease-in-out infinite;
-}
-
-.float-fast {
-  animation: floatFast 7s ease-in-out infinite;
-}
-
-.link-underline {
-  position: relative;
-}
+/* ─── Link underline ────────────────────────────────────────────────────── */
+.link-underline { position: relative; }
 
 .link-underline::after {
   content: "";
@@ -115,14 +156,10 @@ body {
   transition: width 0.3s ease;
 }
 
-.link-underline:hover::after {
-  width: 100%;
-}
+.link-underline:hover::after { width: 100%; }
 
-.ripple {
-  position: relative;
-  overflow: hidden;
-}
+/* ─── Ripple click effect ───────────────────────────────────────────────── */
+.ripple { position: relative; overflow: hidden; }
 
 .ripple::after {
   content: "";
@@ -141,34 +178,37 @@ body {
   transition: 0s;
 }
 
+/* ─── Loading skeleton ──────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.12) 0%,
+    rgba(148, 163, 184, 0.24) 50%,
+    rgba(148, 163, 184, 0.12) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* ─── Keyframes ─────────────────────────────────────────────────────────── */
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes floatSlow {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-18px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-18px); }
 }
 
 @keyframes floatFast {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

@@ -63,7 +63,7 @@ export default function Navbar() {
     <motion.header
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.6 }}
       className="fixed left-0 right-0 top-0 z-50"
     >
       <div className="mx-auto mt-4 max-w-6xl px-4 sm:px-6">

@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { HTMLAttributes, ReactNode } from "react";
+import type { HTMLMotionProps } from "framer-motion";
+import type { ReactNode } from "react";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
   /** Apply glassmorphism background (default: true) */
   glass?: boolean;
@@ -62,30 +63,21 @@ export function Card({
     />
   ) : null;
 
-  // Animated version — uses framer-motion whileInView
-  if (animate) {
-    return (
-      <motion.div
-        variants={cardVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.5, delay, ease: "easeOut" }}
-        className={baseClass}
-        // Forward remaining HTML attributes (id, aria-*, data-*, etc.)
-        {...(props as React.HTMLAttributes<HTMLDivElement>)}
-      >
-        {glowLayer}
-        {children}
-      </motion.div>
-    );
-  }
+  // Use a single motion element to avoid prop type conflicts.
+  const motionConfig = animate
+    ? {
+        variants: cardVariants,
+        initial: "hidden",
+        whileInView: "visible",
+        viewport: { once: true, amount: 0.2 },
+        transition: { duration: 0.5, delay },
+      }
+    : { initial: false };
 
-  // Non-animated version — plain div
   return (
-    <div className={baseClass} {...props}>
+    <motion.div className={baseClass} {...motionConfig} {...props}>
       {glowLayer}
       {children}
-    </div>
+    </motion.div>
   );
 }

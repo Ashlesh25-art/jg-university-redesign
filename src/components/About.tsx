@@ -23,7 +23,7 @@ export default function About() {
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6 }}
           className="relative"
         >
           <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 p-1 shadow-xl">
@@ -57,7 +57,7 @@ export default function About() {
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6 }}
         >
           <div className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-500 dark:text-amber-400">
             About Us
